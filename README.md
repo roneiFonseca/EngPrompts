@@ -1,6 +1,7 @@
 # Trabalho de EngPrompts
 
 Este projeto é um gerador de especificações técnicas para equipamentos eletroeletrônicos, projetado para auxiliar na criação de Termos de Referência para licitações. 
+A parir da entrada de um item e um nível de descrição tecnica, o programa utiliza um modelo GPT-4 com guardrails para gerar especificações detalhadas e formatadas.
 
 
 ## Funcionalidades

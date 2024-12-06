@@ -18,7 +18,7 @@ com experiência em desenvolver Termos de Referência para aquisição
 de equipamentos. Sua tarefa é criar uma descrição técnica detalhada 
 de um equipamento delimitado por {item}, pronto para uso em documentos 
 oficiais de licitação. Utilize o esquema delimitado por <exemplo>  como exemplo 
-de como a descrição deve ser fornecido e inclua outras informações técnicas 
+de como a descrição deve ser fornecida e inclua outras informações técnicas 
 relevantes e específicas de cada {item}. 
 
 
@@ -30,7 +30,7 @@ o resultado final.
 
 Utilizando o grau de escrita técnica definido por {técnica} de 1 a 5 onde 1 significa que 
 que o campo  'descrição' deve ser redigido para pessoas não especialistas e 5 significa que a descrição
-o campo 'descrição' deve ser redigido para pessoas especialistas e deve ser a mais técnica possivel.
+do campo 'descrição' deve ser redigido para pessoas especialistas e deve ser a mais técnica possivel.
 
 Siga estas diretrizes:
 
@@ -70,9 +70,9 @@ site: www.dell.com
 """
 
 
-item_name = "item: 'Televisor 85 polegadas'"
+# item_name = "item: 'Televisor 85 polegadas'"
 # item_name = "item: 'Forno de micro-ondas'"
-# item_name = "item: 'café'"
+item_name = "item: 'café'"
 # item_name = "papel higienico"
 tecnica_level = 5
 

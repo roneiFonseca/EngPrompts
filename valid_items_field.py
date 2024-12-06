@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, HttpUrl, ValidationError
 from typing import List, Optional
 
 class ItemValidator(BaseModel):
-    tem: str = Field(..., min_length=1)
+    item: str = Field(..., min_length=1)
     fabricante: str = Field(..., min_length=1)
     modelo: str = Field(..., min_length=1)
     descricao: str = Field(..., min_length=1)
