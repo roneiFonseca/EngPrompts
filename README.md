@@ -26,7 +26,8 @@ O programa gera especificações no formato:
 ## Dependências
 
 O projeto utiliza:
-- guardrails
+- python 3.12
+- guardrails 0.515
 - python-dotenv
 - pydantic
 
@@ -51,7 +52,8 @@ O projeto utiliza:
      OPENAI_API_KEY=sua_chave_aqui
      ```
 
-4. Execute o programa:
+4. Execute o programa: Passe os itens e nível de descrição tecnicas nas variaveis no aqurivo main.py:  "item_name = "item: 'Televisor 85 polegadas'" e ""tecnica_level = 5"
+
    ```bash
    python main.py
    ```
