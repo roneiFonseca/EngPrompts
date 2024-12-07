@@ -1,23 +1,26 @@
-from guardrails import Guard
-from dotenv import load_dotenv
-from pydantic import BaseModel, Field, HttpUrl
-from typing import Optional, List
-from valid_items_field import ItemValidator
+# Importações necessárias
+import openai  # Cliente OpenAI para interação com a API
+from typing import List, Optional  # Tipos para anotações
+from rich import print  # Formatação rica para output no terminal
+from dotenv import load_dotenv  # Carregamento de variáveis de ambiente
+import guardrails as gd  # Framework para validação de saídas do LLM
+from valid_items_field import ItemValidator  # Schema de validação Pydantic
 
+# Carrega variáveis de ambiente do arquivo .env (incluindo OPENAI_API_KEY)
 load_dotenv()
 
-
-# Setup Guard
-guard = Guard.from_pydantic(output_class=ItemValidator)
-
-
+# Define o prompt principal que instrui o GPT-4 sobre seu papel e tarefas
+# O prompt inclui diretrizes específicas para:
+# - Especificações técnicas
+# - Requisitos de qualidade
+# - Critérios de sustentabilidade
 prompt = """
 
 Você é um técnico especializado em equipamentos eletroeletrônicos 
 com experiência em desenvolver Termos de Referência para aquisição 
 de equipamentos. Sua tarefa é criar uma descrição técnica detalhada 
 de um equipamento delimitado por {item}, pronto para uso em documentos 
-oficiais de licitação. Utilize o esquema delimitado por <exemplo>  como exemplo 
+oficiais de licitação. Utilize o esquema delimitado por <exemplo>  como guia 
 de como a descrição deve ser fornecida e inclua outras informações técnicas 
 relevantes e específicas de cada {item}. 
 
@@ -36,16 +39,17 @@ Siga estas diretrizes:
 
 1. ESPECIFICAÇÕES TÉCNICAS:
    - Liste todas as especificações técnicas relevantes
-   - Inclua dimensões, potência, capacidade e outras métricas importantes
+   - Inclua tecnologias diferenciais, dimensões, potência, capacidade e outras métricas importantes
    - Mencione tecnologias e recursos específicos
 
 2. REQUISITOS DE QUALIDADE:
-   - Cite certificações necessárias
-   - Mencione normas técnicas aplicáveis
+   - Cite certificações necessárias como  PROCEL, ISO 9001
+   - Mencione normas técnicas aplicáveis como ISO, ABNT NBR  entre outras
    - Especifique requisitos de garantia
 
 3. CRITÉRIOS DE SUSTENTABILIDADE:
-   - Inclua requisitos de eficiência energética
+   - Inclua requisitos de eficiência energética 
+   - Inclua requisitos de sustentabilidade com certificações relevantes
    - Mencione certificações ambientais relevantes
    - Especifique critérios de descarte e reciclagem
 
@@ -66,32 +70,48 @@ site: www.dell.com
 
 
 
-
 """
 
-
-# item_name = "item: 'Televisor 85 polegadas'"
-# item_name = "item: 'Forno de micro-ondas'"
-item_name = "item: 'café'"
-# item_name = "papel higienico"
+# Configuração dos parâmetros de entrada
+# item_name: nome do item para gerar especificações
+# tecnica_level: nível de complexidade técnica (1-5)
+item_name = "café"
 tecnica_level = 5
 
-# Format the content as a single string
+# Formata o conteúdo para envio ao modelo
 content = f"""
 item: {item_name}
 técnica: {tecnica_level}
 """
 
-try:
-    res = guard(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": prompt},
-            {"role": "user", "content": content},
-        ],
-    )
-    print(f"Saida: {res.raw_llm_output}")
-    print(f"Saida Validada: {res.validated_output}")
+# Estrutura as mensagens no formato esperado pela API OpenAI
+# - system: define o comportamento do modelo
+# - user: contém a entrada específica do usuário
+messages = [{
+  "role": "system",
+  "content": prompt
+}, {
+  "role": "user",
+  "content": content
+}]
 
-except Exception as e:
-    print("Error:", str(e))
+# Cria um guard usando o modelo Pydantic ItemValidator
+# Isso garante que a saída do modelo seguirá a estrutura definida
+guard = gd.Guard.for_pydantic(ItemValidator)
+
+# Executa o modelo com os parâmetros definidos
+# - raw_llm_output: saída bruta do modelo
+# - validated_output: saída validada conforme o schema
+# - temperature=0.0: mantém as respostas consistentes
+# - max_tokens=1024: limite máximo de tokens na resposta
+raw_llm_output, validated_output, *rest = guard(
+    messages=messages,
+    model="gpt-4o-mini",
+    max_tokens=1024,
+    temperature=0.0,
+)
+
+# Mostra a árvore de validação da última execução
+# Útil para debug e entender como o modelo estruturou a resposta
+# print(validated_output)
+print(guard.history.last.tree)
